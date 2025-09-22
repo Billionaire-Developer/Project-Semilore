@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+  <head><title>Item {{ item.uid }}</title></head>
+  <body>
+    <h1>{{ item.uid }} - {{ item.name }}</h1>
+    <p>Category: {{ item.category }}</p>
+    <p>Department: {{ item.department }}</p>
+    <p>Status: {{ item.status }}</p>
+    {% if item.qr_code_image %}
+      <img src="{{ item.qr_code_image.url }}" alt="QR">
+    {% endif %}
+    <hr>
+    <h2>Inspections</h2>
+    <ul>
+    {% for ins in item.inspections.all %}
+      <li>{{ ins.inspected_at }} — Score: {{ ins.condition_score }} — {{ ins.comments }}</li>
+    {% empty %}
+      <li>No inspections yet</li>
+    {% endfor %}
+    </ul>
+  </body>
+</html>
