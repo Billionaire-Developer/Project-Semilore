@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Verify {{ item.uid }}{% endblock %}
+{% block content %}
+
+<div class="max-w-lg mx-auto flex flex-col gap-stack-md">
+    <div>
+        <h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">{{ item.name }}</h1>
+        <span class="font-mono text-xs bg-surface-container text-on-surface-variant px-2 py-0.5 rounded mt-1 inline-block">{{ item.uid }}</span>
+    </div>
+
+    {% if scope_warning %}
+    <div class="bg-tertiary-fixed border border-on-tertiary-fixed-variant/20 text-on-tertiary-fixed rounded-lg p-4 flex items-start gap-2 font-body-md text-body-md">
+        <span class="material-symbols-outlined text-[20px] text-on-tertiary-fixed-variant mt-0.5">warning</span>
+        This item's office differs from the active audit scope.
+    </div>
+    {% endif %}
+
+    <!-- Item Details Card -->
+    <div class="bg-surface-container-lowest border border-border-subtle rounded-xl shadow-sm p-stack-md">
+        <h2 class="font-headline-sm text-headline-sm text-on-surface mb-stack-md border-b border-border-subtle pb-2">Asset Details</h2>
+        <dl class="grid grid-cols-2 gap-x-6 gap-y-2">
+            <dt class="font-label-caps text-label-caps text-on-surface-variant uppercase">Department</dt>
+            <dd class="font-body-md text-body-md text-on-surface">{{ item.department.name }}</dd>
+            <dt class="font-label-caps text-label-caps text-on-surface-variant uppercase">Office</dt>
+            <dd class="font-body-md text-body-md text-on-surface">{{ item.office|default:"—" }}</dd>
+            <dt class="font-label-caps text-label-caps text-on-surface-variant uppercase">Category</dt>
+            <dd class="font-body-md text-body-md text-on-surface">{{ item.category|default:"—" }}</dd>
+            <dt class="font-label-caps text-label-caps text-on-surface-variant uppercase">Status</dt>
+            <dd class="font-body-md text-body-md text-on-surface">{{ item.status }}</dd>
+        </dl>
+    </div>
+
+    {% if active_session %}
+    <!-- Audit Verification Card -->
+    <div class="bg-secondary-fixed border border-on-secondary-fixed-variant/20 rounded-xl p-stack-md shadow-sm">
+        <div class="flex items-center gap-2 mb-stack-md">
+            <span class="material-symbols-outlined text-primary text-[20px]">fact_check</span>
+            <h2 class="font-headline-sm text-headline-sm text-on-surface">Active Audit: {{ active_session.title }}</h2>
+        </div>
+        <form method="post" class="space-y-stack-md">
+            {% csrf_token %}
+            <input type="hidden" name="session_id" value="{{ active_session.pk }}">
+            {% for field in verification_form %}
+            <div class="flex flex-col gap-1.5">
+                <label for="{{ field.id_for_label }}" class="font-label-caps text-label-caps text-on-surface-variant uppercase">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}<p class="text-error text-xs">{{ field.errors.0 }}</p>{% endif %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="w-full bg-status-success hover:opacity-90 text-white py-3 rounded-lg font-label-caps text-label-caps flex items-center justify-center gap-2 transition-opacity">
+                <span class="material-symbols-outlined text-[18px]">check_circle</span> Mark Verified
+            </button>
+        </form>
+    </div>
+    {% else %}
+    <div class="bg-secondary-container/20 border border-secondary-container rounded-xl p-4 flex items-start gap-2 font-body-md text-body-md text-on-surface-variant">
+        <span class="material-symbols-outlined text-[20px] mt-0.5">info</span>
+        No active audit session for this department. Item details shown for reference.
+    </div>
+    {% endif %}
+
+    <p class="font-label-caps text-[11px] text-outline break-all">Verify URL: {{ verify_url }}</p>
+</div>
+
+{% endblock %}

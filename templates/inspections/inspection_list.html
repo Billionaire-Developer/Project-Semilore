@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Inspections{% endblock %}
+{% block content %}
+
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-stack-md">
+    <div>
+        <h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-surface">Inspections</h1>
+        <p class="font-body-md text-body-md text-on-surface-variant mt-1">All asset inspection records across the institution.</p>
+    </div>
+</div>
+
+<div class="bg-surface-container-lowest border border-border-subtle rounded-xl shadow-sm overflow-hidden">
+    <div class="overflow-x-auto custom-scrollbar">
+        <table class="w-full text-left border-collapse min-w-[640px]">
+            <thead>
+                <tr class="bg-on-surface text-surface">
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">Item</th>
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">Score</th>
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">Functional</th>
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">Inspector</th>
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">Date</th>
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">Report</th>
+                </tr>
+            </thead>
+            <tbody class="font-body-md text-body-md">
+                {% for i in object_list %}
+                <tr class="border-b border-border-subtle hover:bg-surface-gray transition-colors">
+                    <td class="py-3 px-stack-md">
+                        <a href="{% url 'item-detail' i.item.pk %}" style="text-decoration:none;" class="flex items-center gap-2 group">
+                            <span class="font-mono text-xs bg-surface-container text-on-surface-variant px-1.5 py-0.5 rounded group-hover:bg-primary group-hover:text-on-primary transition-colors">{{ i.item.uid }}</span>
+                            <span class="text-on-surface font-medium">{{ i.item.name }}</span>
+                        </a>
+                    </td>
+                    <td class="py-3 px-stack-md">
+                        <div class="flex items-center gap-1.5">
+                            <span class="font-semibold text-on-surface">{{ i.condition_score }}/5</span>
+                            {% if i.is_audit_auto %}
+                            <span class="inline-flex items-center bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-caps text-[10px] px-1.5 py-0.5 rounded-full">Auto</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="py-3 px-stack-md">
+                        {% if i.functional %}
+                        <span class="inline-flex items-center gap-1 text-status-success font-label-caps text-label-caps"><span class="material-symbols-outlined text-[16px]">check_circle</span> Yes</span>
+                        {% else %}
+                        <span class="inline-flex items-center gap-1 text-error font-label-caps text-label-caps"><span class="material-symbols-outlined text-[16px]">cancel</span> No</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-3 px-stack-md text-on-surface-variant">{{ i.inspector.username|default:"—" }}</td>
+                    <td class="py-3 px-stack-md text-[13px] text-outline">{{ i.inspected_at|date:"M j, Y" }}</td>
+                    <td class="py-3 px-stack-md">
+                        <a href="{% url 'inspection-pdf' %}?inspection={{ i.pk }}" style="text-decoration:none;" class="inline-flex items-center bg-primary/10 text-primary hover:bg-primary hover:text-on-primary font-label-caps text-[11px] px-3 py-1.5 rounded-full transition-colors gap-1">
+                            <span class="material-symbols-outlined text-[14px]">picture_as_pdf</span> PDF
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="py-10 text-center text-on-surface-variant font-body-md text-body-md">
+                        <span class="material-symbols-outlined text-[40px] mb-2 block text-outline">health_and_safety</span>
+                        No inspections recorded.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

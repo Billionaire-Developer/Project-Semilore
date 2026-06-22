@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Offices{% endblock %}
+{% block content %}
+
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-stack-md">
+    <div>
+        <h1
+            class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-surface">
+            Offices</h1>
+        <p class="font-body-md text-body-md text-on-surface-variant mt-1">Manage office and room locations within
+            departments.</p>
+    </div>
+    <a href="{% url 'office-add' %}" style="text-decoration:none;"
+        class="bg-primary hover:bg-on-primary-fixed-variant text-on-primary font-body-md text-body-md font-semibold px-6 py-2.5 rounded-lg shadow-sm flex items-center gap-2 transition-colors min-h-[44px] w-full md:w-auto justify-center">
+        <span class="material-symbols-outlined text-[20px]">add</span> Add Office
+    </a>
+</div>
+
+<div class="bg-surface-container-lowest border border-border-subtle rounded-xl shadow-sm overflow-hidden">
+    <div class="overflow-x-auto custom-scrollbar">
+        <table class="w-full text-left border-collapse min-w-[560px]">
+            <thead>
+                <tr class="bg-on-surface text-surface">
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">Code</th>
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">Name</th>
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">Department</th>
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">Location</th>
+                </tr>
+            </thead>
+            <tbody class="font-body-md text-body-md">
+                {% for o in offices %}
+                <tr class="border-b border-border-subtle hover:bg-surface-gray transition-colors">
+                    <td class="py-3 px-stack-md">
+                        <span
+                            class="font-mono text-xs bg-surface-container text-on-surface-variant px-2 py-0.5 rounded">{{
+                            o.code }}</span>
+                    </td>
+                    <td class="py-3 px-stack-md font-medium text-on-surface">{{ o.name }}</td>
+                    <td class="py-3 px-stack-md text-on-surface-variant">{{ o.department.name }}</td>
+                    <td class="py-3 px-stack-md text-on-surface-variant">
+                        <span class="inline-flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[14px] text-outline">location_on</span>
+                            {% if o.building %}{{ o.building }}{% endif %}{% if o.room %} / Rm {{ o.room }}{% endif %}{%
+                            if o.floor %}, Floor {{ o.floor }}{% endif %}
+                            {% if not o.building and not o.room %}—{% endif %}
+                        </span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="py-10 text-center text-on-surface-variant font-body-md">
+                        <span class="material-symbols-outlined text-[40px] mb-2 block text-outline">location_on</span>
+                        No offices added yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

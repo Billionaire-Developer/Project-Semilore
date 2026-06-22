@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-stack-md">
+    <div>
+        <h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-surface">Overview</h1>
+        <p class="font-body-md text-body-md text-on-surface-variant mt-1">Manage institutional assets and track departmental inventory.</p>
+    </div>
+    <a href="{% url 'item-add' %}" style="text-decoration: none;" class="bg-primary hover:bg-on-primary-fixed-variant text-on-primary font-body-md text-body-md font-semibold px-6 py-2.5 rounded-lg shadow-sm flex items-center gap-2 transition-colors min-h-[44px] w-full md:w-auto justify-center">
+        <span class="material-symbols-outlined text-[20px]">add</span>
+        Add Asset
+    </a>
+</div>
+
+<!-- Stats Bento Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-stack-md">
+    <!-- Total Assets -->
+    <div class="bg-primary-container text-on-primary-container rounded-xl p-stack-md shadow-sm hover:-translate-y-[2px] transition-transform duration-200 flex flex-col justify-between h-32">
+        <div class="flex items-center justify-between">
+            <span class="font-body-md text-body-md font-medium">Total Assets</span>
+            <span class="material-symbols-outlined opacity-80">account_balance</span>
+        </div>
+        <div>
+            <div class="font-headline-lg-mobile text-headline-lg-mobile font-bold">{{ item_count }}</div>
+            <div class="font-label-caps text-label-caps opacity-80 mt-1">Institutional Items</div>
+        </div>
+    </div>
+
+    <!-- Faculties -->
+    <div class="bg-surface-container-lowest border border-border-subtle rounded-xl p-stack-md shadow-sm hover:-translate-y-[2px] transition-transform duration-200 flex flex-col justify-between h-32">
+        <div class="flex items-center justify-between text-on-surface-variant">
+            <span class="font-body-md text-body-md font-medium">Faculties</span>
+            <div class="bg-secondary-container text-on-secondary-container p-1.5 rounded-lg flex items-center justify-center">
+                <span class="material-symbols-outlined text-[20px]">domain</span>
+            </div>
+        </div>
+        <div>
+            <div class="font-headline-md text-headline-md text-on-surface">{{ faculty_count }}</div>
+            <div class="font-body-md text-body-md text-status-success flex items-center mt-1">
+                <span class="material-symbols-outlined text-[16px] mr-1">trending_up</span> Active
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Audits -->
+    <div class="bg-surface-container-lowest border border-border-subtle rounded-xl p-stack-md shadow-sm hover:-translate-y-[2px] transition-transform duration-200 flex flex-col justify-between h-32">
+        <div class="flex items-center justify-between text-on-surface-variant">
+            <span class="font-body-md text-body-md font-medium">Active Audits</span>
+            <div class="bg-tertiary-fixed text-on-tertiary-fixed-variant p-1.5 rounded-lg flex items-center justify-center">
+                <span class="material-symbols-outlined text-[20px]">fact_check</span>
+            </div>
+        </div>
+        <div>
+            <div class="font-headline-md text-headline-md text-on-surface">{{ active_audits }}</div>
+            <div class="font-body-md text-body-md text-on-surface-variant flex items-center mt-1">
+                <span class="material-symbols-outlined text-[16px] mr-1">inventory_2</span> In Progress
+            </div>
+        </div>
+    </div>
+
+    <!-- Low Condition -->
+    <div class="bg-surface-container-lowest border border-border-subtle rounded-xl p-stack-md shadow-sm hover:-translate-y-[2px] transition-transform duration-200 flex flex-col justify-between h-32">
+        <div class="flex items-center justify-between text-on-surface-variant">
+            <span class="font-body-md text-body-md font-medium">Low Condition</span>
+            <div class="bg-error-container text-on-error-container p-1.5 rounded-lg flex items-center justify-center">
+                <span class="material-symbols-outlined text-[20px]">build</span>
+            </div>
+        </div>
+        <div>
+            <div class="font-headline-md text-headline-md text-on-surface">{{ low_condition }}</div>
+            <div class="font-body-md text-body-md text-status-warning flex items-center mt-1">
+                <span class="material-symbols-outlined text-[16px] mr-1">warning</span> Require Maintenance
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content Split -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter mt-stack-sm">
+    
+    <!-- Left Column: Active Audits Table (Span 2) -->
+    <div class="lg:col-span-2 bg-surface-container-lowest border border-border-subtle rounded-xl shadow-sm flex flex-col overflow-hidden">
+        <div class="p-stack-md border-b border-border-subtle flex items-center justify-between bg-surface-bright">
+            <h2 class="font-headline-sm text-headline-sm text-on-surface">Active Audits</h2>
+            {% if perms.core.add_auditsession %}
+            <a href="{% url 'audit-add' %}" style="text-decoration: none;" class="text-primary hover:text-on-primary-fixed-variant font-label-caps text-label-caps flex items-center gap-1 transition-colors">
+                New Audit <span class="material-symbols-outlined text-[16px]">add</span>
+            </a>
+            {% endif %}
+        </div>
+        <div class="overflow-x-auto custom-scrollbar">
+            <table class="w-full text-left border-collapse min-w-[600px]">
+                <thead>
+                    <tr class="bg-on-surface text-surface">
+                        <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">Audit Title</th>
+                        <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">Department</th>
+                        <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">Progress</th>
+                        <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="font-body-md text-body-md">
+                    {% for s in active_sessions %}
+                    <tr class="border-b border-border-subtle hover:bg-surface-gray transition-colors">
+                        <td class="py-3 px-stack-md font-medium text-on-surface">{{ s.title }}</td>
+                        <td class="py-3 px-stack-md text-on-surface-variant">{{ s.department.name }}</td>
+                        <td class="py-3 px-stack-md text-on-surface-variant">
+                            <span class="inline-flex items-center bg-secondary-fixed text-on-secondary-fixed-variant font-label-caps text-[11px] px-2.5 py-1 rounded-full">
+                                {{ s.verified_count }} / {{ s.expected_count }}
+                            </span>
+                        </td>
+                        <td class="py-3 px-stack-md">
+                            <a href="{% url 'audit-scanner' s.pk %}" style="text-decoration: none;" class="inline-flex items-center bg-primary text-on-primary font-label-caps text-[11px] px-3 py-1.5 rounded-full hover:bg-on-primary-fixed-variant transition-colors">
+                                Scan QR
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="py-4 px-stack-md text-center text-on-surface-variant">
+                            No active audits at the moment.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Right Column: Sidebar (Span 1) -->
+    <div class="flex flex-col gap-gutter">
+        <!-- Departmental Breakdown (Static Demo UI to keep aesthetics) -->
+        <div class="bg-surface-container-lowest border border-border-subtle rounded-xl shadow-sm p-stack-md">
+            <h3 class="font-headline-sm text-headline-sm text-on-surface mb-stack-md">Department Load (Demo)</h3>
+            <div class="flex flex-col gap-4">
+                <div>
+                    <div class="flex justify-between font-body-md text-body-md text-on-surface-variant mb-1">
+                        <span>Engineering</span>
+                        <span class="font-medium text-on-surface">45%</span>
+                    </div>
+                    <div class="w-full bg-surface-container rounded-full h-2">
+                        <div class="bg-primary h-2 rounded-full" style="width: 45%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between font-body-md text-body-md text-on-surface-variant mb-1">
+                        <span>Business</span>
+                        <span class="font-medium text-on-surface">25%</span>
+                    </div>
+                    <div class="w-full bg-surface-container rounded-full h-2">
+                        <div class="bg-secondary h-2 rounded-full" style="width: 25%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between font-body-md text-body-md text-on-surface-variant mb-1">
+                        <span>Arts & Sciences</span>
+                        <span class="font-medium text-on-surface">20%</span>
+                    </div>
+                    <div class="w-full bg-surface-container rounded-full h-2">
+                        <div class="bg-tertiary h-2 rounded-full" style="width: 20%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity Timeline -->
+        <div class="bg-surface-container-lowest border border-border-subtle rounded-xl shadow-sm p-stack-md flex-grow">
+            <h3 class="font-headline-sm text-headline-sm text-on-surface mb-stack-md">Recent Activity</h3>
+            <div class="relative border-l border-border-subtle ml-3 space-y-6">
+                {% for log in recent_activity %}
+                <div class="relative pl-6">
+                    <div class="absolute -left-1.5 top-1 w-3 h-3 bg-primary rounded-full ring-4 ring-surface-container-lowest"></div>
+                    <p class="font-body-md text-body-md text-on-surface">{{ log.get_action_display }}</p>
+                    <p class="font-body-md text-[13px] text-on-surface-variant mt-0.5">
+                        {{ log.model_name }} updated by {{ log.user.username }}
+                    </p>
+                    <span class="text-xs text-outline block mt-1">{{ log.timestamp|timesince }} ago</span>
+                </div>
+                {% empty %}
+                <div class="relative pl-6">
+                    <p class="font-body-md text-body-md text-on-surface-variant">No recent activity.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

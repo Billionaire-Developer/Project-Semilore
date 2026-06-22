@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Audit Sessions{% endblock %}
+{% block content %}
+
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-stack-md">
+    <div>
+        <h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-surface">Audit Sessions</h1>
+        <p class="font-body-md text-body-md text-on-surface-variant mt-1">Track and manage all departmental inventory audits.</p>
+    </div>
+    {% if can_run_audits %}
+    <a href="{% url 'audit-add' %}" style="text-decoration:none;" class="bg-primary hover:bg-on-primary-fixed-variant text-on-primary font-body-md text-body-md font-semibold px-6 py-2.5 rounded-lg shadow-sm flex items-center gap-2 transition-colors min-h-[44px] w-full md:w-auto justify-center">
+        <span class="material-symbols-outlined text-[20px]">add</span> New Audit
+    </a>
+    {% endif %}
+</div>
+
+<!-- Sessions Table -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-xl shadow-sm overflow-hidden">
+    <div class="overflow-x-auto custom-scrollbar">
+        <table class="w-full text-left border-collapse min-w-[640px]">
+            <thead>
+                <tr class="bg-on-surface text-surface">
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">Title</th>
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">Department</th>
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">Status</th>
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">Progress</th>
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold"></th>
+                </tr>
+            </thead>
+            <tbody class="font-body-md text-body-md">
+                {% for s in sessions %}
+                <tr class="border-b border-border-subtle hover:bg-surface-gray transition-colors">
+                    <td class="py-3 px-stack-md font-medium text-on-surface">{{ s.title }}</td>
+                    <td class="py-3 px-stack-md text-on-surface-variant">
+                        {{ s.department.name }}{% if s.office %} <span class="text-outline">/ {{ s.office.name }}</span>{% endif %}
+                    </td>
+                    <td class="py-3 px-stack-md">
+                        {% if s.status == 'active' %}
+                            <span class="inline-flex items-center bg-secondary-fixed text-on-secondary-fixed-variant font-label-caps text-[11px] px-2.5 py-1 rounded-full">Active</span>
+                        {% elif s.status == 'closed' %}
+                            <span class="inline-flex items-center bg-surface-container text-on-surface-variant font-label-caps text-[11px] px-2.5 py-1 rounded-full">Closed</span>
+                        {% else %}
+                            <span class="inline-flex items-center bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-caps text-[11px] px-2.5 py-1 rounded-full">Draft</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-3 px-stack-md">
+                        <div class="flex items-center gap-2">
+                            <div class="w-24 bg-surface-container rounded-full h-1.5">
+                                <div class="bg-primary h-1.5 rounded-full" style="width: {{ s.progress_pct }}%"></div>
+                            </div>
+                            <span class="text-[12px] text-on-surface-variant">{{ s.verified_count }}/{{ s.expected_count }}</span>
+                        </div>
+                    </td>
+                    <td class="py-3 px-stack-md">
+                        <div class="flex items-center gap-2">
+                            <a href="{% url 'audit-session-detail' s.pk %}" style="text-decoration:none;" class="inline-flex items-center bg-primary/10 text-primary hover:bg-primary hover:text-on-primary font-label-caps text-[11px] px-3 py-1.5 rounded-full transition-colors gap-1">
+                                <span class="material-symbols-outlined text-[14px]">visibility</span> View
+                            </a>
+                            {% if s.status == 'active' %}
+                            <a href="{% url 'audit-scanner' s.pk %}" style="text-decoration:none;" class="inline-flex items-center bg-primary text-on-primary font-label-caps text-[11px] px-3 py-1.5 rounded-full hover:bg-on-primary-fixed-variant transition-colors gap-1">
+                                <span class="material-symbols-outlined text-[14px]">qr_code_scanner</span> Scan
+                            </a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="py-10 text-center text-on-surface-variant font-body-md text-body-md">
+                        <span class="material-symbols-outlined text-[40px] mb-2 block text-outline">fact_check</span>
+                        No audit sessions yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

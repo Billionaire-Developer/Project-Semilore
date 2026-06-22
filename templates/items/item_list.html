@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}Inventory — Assets{% endblock %}
+{% block content %}
+
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-stack-md">
+    <div>
+        <h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-surface">Assets</h1>
+        <p class="font-body-md text-body-md text-on-surface-variant mt-1">Manage and track all institutional inventory items.</p>
+    </div>
+    {% if user.is_staff %}
+    <a href="{% url 'item-add' %}" style="text-decoration:none;" class="bg-primary hover:bg-on-primary-fixed-variant text-on-primary font-body-md text-body-md font-semibold px-6 py-2.5 rounded-lg shadow-sm flex items-center gap-2 transition-colors min-h-[44px] w-full md:w-auto justify-center">
+        <span class="material-symbols-outlined text-[20px]">add</span> Add Asset
+    </a>
+    {% endif %}
+</div>
+
+<!-- Filters -->
+<form class="flex flex-col sm:flex-row gap-stack-sm" method="get">
+    <div class="relative flex-grow">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+        <input type="search" name="q" value="{{ search_query }}" placeholder="Search UID, name, serial…"
+            class="form-input block w-full rounded-lg border-outline-variant bg-surface-bright text-on-surface pl-10 pr-4 py-2.5 focus:outline-none transition-shadow font-body-md text-body-md">
+    </div>
+    <div class="relative">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">domain</span>
+        <select name="department" class="form-select block rounded-lg border-outline-variant bg-surface-bright text-on-surface pl-10 pr-4 py-2.5 focus:outline-none transition-shadow font-body-md text-body-md">
+            <option value="">All Departments</option>
+            {% for d in departments %}
+            <option value="{{ d.pk }}" {% if request.GET.department == d.pk|stringformat:"s" %}selected{% endif %}>{{ d.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <button type="submit" class="bg-primary hover:bg-on-primary-fixed-variant text-on-primary font-label-caps text-label-caps px-5 py-2.5 rounded-lg transition-colors min-h-[44px] flex items-center gap-2">
+        <span class="material-symbols-outlined text-[18px]">filter_list</span> Filter
+    </button>
+</form>
+
+<!-- Items Table -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-xl shadow-sm overflow-hidden">
+    <div class="overflow-x-auto custom-scrollbar">
+        <table class="w-full text-left border-collapse min-w-[700px]">
+            <thead>
+                <tr class="bg-on-surface text-surface">
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">UID</th>
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">Name</th>
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">Department</th>
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">Office</th>
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">Status</th>
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold"></th>
+                </tr>
+            </thead>
+            <tbody class="font-body-md text-body-md">
+                {% for item in items %}
+                <tr class="border-b border-border-subtle hover:bg-surface-gray transition-colors {% cycle '' 'bg-surface-gray/40' %}">
+                    <td class="py-3 px-stack-md">
+                        <span class="font-mono text-xs bg-surface-container text-on-surface-variant px-2 py-0.5 rounded">{{ item.uid }}</span>
+                    </td>
+                    <td class="py-3 px-stack-md font-medium text-on-surface">{{ item.name }}</td>
+                    <td class="py-3 px-stack-md text-on-surface-variant">{{ item.department.name }}</td>
+                    <td class="py-3 px-stack-md text-on-surface-variant">{{ item.office|default:"—" }}</td>
+                    <td class="py-3 px-stack-md">
+                        {% if item.status == 'active' %}
+                            <span class="inline-flex items-center bg-secondary-fixed text-on-secondary-fixed-variant font-label-caps text-[11px] px-2.5 py-1 rounded-full">Active</span>
+                        {% elif item.status == 'maintenance' %}
+                            <span class="inline-flex items-center bg-error-container text-on-error-container font-label-caps text-[11px] px-2.5 py-1 rounded-full">Maintenance</span>
+                        {% elif item.status == 'disposed' %}
+                            <span class="inline-flex items-center bg-surface-container text-on-surface-variant font-label-caps text-[11px] px-2.5 py-1 rounded-full">Disposed</span>
+                        {% else %}
+                            <span class="inline-flex items-center bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-caps text-[11px] px-2.5 py-1 rounded-full">{{ item.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-3 px-stack-md">
+                        <a href="{% url 'item-detail' item.pk %}" style="text-decoration:none;" class="inline-flex items-center bg-primary/10 text-primary hover:bg-primary hover:text-on-primary font-label-caps text-[11px] px-3 py-1.5 rounded-full transition-colors gap-1">
+                            <span class="material-symbols-outlined text-[14px]">visibility</span> View
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="py-10 text-center text-on-surface-variant font-body-md text-body-md">
+                        <span class="material-symbols-outlined text-[40px] mb-2 block text-outline">inventory_2</span>
+                        No items found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if is_paginated %}
+<nav class="flex justify-center gap-2 mt-2">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}" style="text-decoration:none;" class="px-4 py-2 rounded-lg border border-border-subtle bg-surface-container-lowest hover:bg-surface-container text-on-surface font-label-caps text-label-caps transition-colors">
+        ← Previous
+    </a>
+    {% endif %}
+    <span class="px-4 py-2 rounded-lg bg-primary text-on-primary font-label-caps text-label-caps">
+        {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+    </span>
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}" style="text-decoration:none;" class="px-4 py-2 rounded-lg border border-border-subtle bg-surface-container-lowest hover:bg-surface-container text-on-surface font-label-caps text-label-caps transition-colors">
+        Next →
+    </a>
+    {% endif %}
+</nav>
+{% endif %}
+
+{% endblock %}

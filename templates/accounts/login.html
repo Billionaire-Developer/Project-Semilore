@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Login — ScholarTrack{% endblock %}
+{% block body_class %}bg-surface flex items-center justify-center{% endblock %}
+
+{% block content %}
+<div class="w-full max-w-md mx-auto my-12">
+    <div class="bg-surface-container-lowest border border-border-subtle rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] overflow-hidden">
+        
+        <!-- Header -->
+        <div class="bg-primary px-8 py-10 text-center relative overflow-hidden">
+            <div class="relative z-10">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-on-primary-fixed text-primary-fixed mb-4 shadow-inner">
+                    <span class="material-symbols-outlined text-[32px]">lock</span>
+                </div>
+                <h1 class="font-headline-md text-headline-md font-bold text-on-primary">Welcome Back</h1>
+                <p class="font-body-md text-body-md text-primary-fixed mt-2">Sign in to manage your institutional assets</p>
+            </div>
+            <!-- Decorative background element -->
+            <div class="absolute top-0 right-0 w-full h-full bg-gradient-to-bl from-on-primary-fixed-variant/20 to-transparent -z-0"></div>
+        </div>
+
+        <!-- Form -->
+        <div class="px-8 py-8">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                    <div class="bg-error-container text-on-error-container p-4 rounded-lg font-body-md text-sm border border-error/20 flex items-start gap-2">
+                        <span class="material-symbols-outlined text-[20px]">error</span>
+                        <div>{{ form.non_field_errors }}</div>
+                    </div>
+                {% endif %}
+                
+                <div class="space-y-4">
+                    <!-- Username Field -->
+                    <div>
+                        <label for="{{ form.username.id_for_label }}" class="block font-label-caps text-label-caps text-on-surface-variant mb-1.5">Username</label>
+                        <div class="relative">
+                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">person</span>
+                            <input type="text" name="username" id="{{ form.username.id_for_label }}" required
+                                class="w-full pl-10 pr-4 py-2.5 bg-surface-container-low border border-border-subtle rounded-lg text-on-surface placeholder-outline-variant focus:ring-2 focus:ring-primary focus:border-primary transition-all font-body-md text-body-md" placeholder="Enter your username">
+                        </div>
+                        {% if form.username.errors %}
+                            <p class="text-error text-xs mt-1">{{ form.username.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Password Field -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label for="{{ form.password.id_for_label }}" class="block font-label-caps text-label-caps text-on-surface-variant">Password</label>
+                            <a href="#" class="font-body-md text-[13px] text-primary hover:text-on-primary-fixed-variant transition-colors">Forgot password?</a>
+                        </div>
+                        <div class="relative">
+                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">key</span>
+                            <input type="password" name="password" id="{{ form.password.id_for_label }}" required
+                                class="w-full pl-10 pr-4 py-2.5 bg-surface-container-low border border-border-subtle rounded-lg text-on-surface placeholder-outline-variant focus:ring-2 focus:ring-primary focus:border-primary transition-all font-body-md text-body-md" placeholder="••••••••">
+                        </div>
+                        {% if form.password.errors %}
+                            <p class="text-error text-xs mt-1">{{ form.password.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-primary hover:bg-on-primary-fixed-variant text-on-primary font-headline-sm text-[16px] py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 mt-4">
+                    Sign In
+                </button>
+            </form>
+
+            <div class="mt-8 text-center">
+                <p class="font-body-md text-body-md text-on-surface-variant">
+                    Don't have an account? 
+                    <a href="{% url 'signup' %}" class="text-primary hover:text-on-primary-fixed-variant font-medium transition-colors">Request Access</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

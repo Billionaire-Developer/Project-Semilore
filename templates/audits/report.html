@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block title %}Audit Report — {{ session.title }}{% endblock %}
+{% block content %}
+
+<!-- Header -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-stack-md">
+    <div>
+        <h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-surface">Audit Report</h1>
+        <p class="font-body-md text-body-md text-on-surface-variant mt-1">
+            {{ session.title }} · {{ session.department.name }}{% if session.office %} / {{ session.office.name }}{% endif %}
+            · Closed {{ session.closed_at|date:"M j, Y H:i"|default:"—" }}
+        </p>
+    </div>
+    <div class="flex gap-2">
+        <a href="{% url 'inspection-pdf' %}?session={{ session.pk }}" style="text-decoration:none;" class="bg-primary hover:bg-on-primary-fixed-variant text-on-primary px-5 py-2.5 rounded-lg font-label-caps text-label-caps flex items-center gap-2 transition-colors">
+            <span class="material-symbols-outlined text-[18px]">picture_as_pdf</span> Download PDF
+        </a>
+        <button onclick="window.print()" class="border border-outline-variant text-on-surface-variant hover:bg-surface-container px-5 py-2.5 rounded-lg font-label-caps text-label-caps flex items-center gap-2 transition-colors no-print">
+            <span class="material-symbols-outlined text-[18px]">print</span> Print
+        </button>
+    </div>
+</div>
+
+<!-- Stats -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-stack-md">
+    <div class="bg-primary-container text-on-primary-container rounded-xl p-stack-md text-center hover:-translate-y-[2px] transition-transform">
+        <div class="font-headline-md text-headline-md font-bold">{{ report.expected_count }}</div>
+        <div class="font-label-caps text-label-caps mt-1">Expected</div>
+    </div>
+    <div class="bg-secondary-fixed text-on-secondary-fixed-variant rounded-xl p-stack-md text-center hover:-translate-y-[2px] transition-transform">
+        <div class="font-headline-md text-headline-md font-bold text-status-success">{{ report.verified_count }}</div>
+        <div class="font-label-caps text-label-caps mt-1">Verified</div>
+    </div>
+    <div class="bg-error-container text-on-error-container rounded-xl p-stack-md text-center hover:-translate-y-[2px] transition-transform">
+        <div class="font-headline-md text-headline-md font-bold">{{ report.missing_items|length }}</div>
+        <div class="font-label-caps text-label-caps mt-1">Missing</div>
+    </div>
+    <div class="bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-xl p-stack-md text-center hover:-translate-y-[2px] transition-transform">
+        <div class="font-headline-md text-headline-md font-bold">{{ report.unexpected|length }}</div>
+        <div class="font-label-caps text-label-caps mt-1">Unexpected</div>
+    </div>
+</div>
+
+<!-- Missing Items -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-xl shadow-sm overflow-hidden">
+    <div class="p-stack-md border-b border-border-subtle bg-surface-bright flex items-center gap-2">
+        <span class="material-symbols-outlined text-error text-[20px]">warning</span>
+        <h2 class="font-headline-sm text-headline-sm text-on-surface">Missing Items</h2>
+    </div>
+    <div class="overflow-x-auto custom-scrollbar">
+        <table class="w-full text-left border-collapse min-w-[480px]">
+            <thead>
+                <tr class="bg-on-surface text-surface">
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">UID</th>
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">Name</th>
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">Office</th>
+                </tr>
+            </thead>
+            <tbody class="font-body-md text-body-md">
+                {% for item in report.missing_items %}
+                <tr class="border-b border-border-subtle hover:bg-error-container/10 transition-colors">
+                    <td class="py-3 px-stack-md"><span class="font-mono text-xs bg-error-container/30 px-1.5 py-0.5 rounded">{{ item.uid }}</span></td>
+                    <td class="py-3 px-stack-md text-on-surface">{{ item.name }}</td>
+                    <td class="py-3 px-stack-md text-on-surface-variant">{{ item.office|default:"—" }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="3" class="py-6 text-center text-status-success font-body-md">✓ None — full match</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Unexpected / Wrong Location -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-xl shadow-sm overflow-hidden">
+    <div class="p-stack-md border-b border-border-subtle bg-surface-bright flex items-center gap-2">
+        <span class="material-symbols-outlined text-status-warning text-[20px]">help</span>
+        <h2 class="font-headline-sm text-headline-sm text-on-surface">Unexpected / Wrong Location</h2>
+    </div>
+    <div class="overflow-x-auto custom-scrollbar">
+        <table class="w-full text-left border-collapse min-w-[480px]">
+            <thead>
+                <tr class="bg-on-surface text-surface">
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">UID</th>
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">Name</th>
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">Status</th>
+                </tr>
+            </thead>
+            <tbody class="font-body-md text-body-md">
+                {% for v in report.unexpected %}
+                <tr class="border-b border-border-subtle hover:bg-surface-gray transition-colors">
+                    <td class="py-3 px-stack-md"><span class="font-mono text-xs bg-surface-container px-1.5 py-0.5 rounded">{{ v.item.uid }}</span></td>
+                    <td class="py-3 px-stack-md text-on-surface">{{ v.item.name }}</td>
+                    <td class="py-3 px-stack-md"><span class="inline-flex items-center bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-caps text-[11px] px-2 py-0.5 rounded-full">{{ v.get_status_display }}</span></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="3" class="py-6 text-center text-on-surface-variant font-body-md">None recorded.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Damaged -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-xl shadow-sm overflow-hidden">
+    <div class="p-stack-md border-b border-border-subtle bg-surface-bright flex items-center gap-2">
+        <span class="material-symbols-outlined text-error text-[20px]">build</span>
+        <h2 class="font-headline-sm text-headline-sm text-on-surface">Damaged Assets</h2>
+    </div>
+    <div class="overflow-x-auto custom-scrollbar">
+        <table class="w-full text-left border-collapse min-w-[480px]">
+            <thead>
+                <tr class="bg-on-surface text-surface">
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">UID</th>
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">Name</th>
+                </tr>
+            </thead>
+            <tbody class="font-body-md text-body-md">
+                {% for v in report.damaged %}
+                <tr class="border-b border-border-subtle hover:bg-error-container/10 transition-colors">
+                    <td class="py-3 px-stack-md"><span class="font-mono text-xs bg-error-container/30 px-1.5 py-0.5 rounded">{{ v.item.uid }}</span></td>
+                    <td class="py-3 px-stack-md text-on-surface">{{ v.item.name }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="2" class="py-6 text-center text-on-surface-variant font-body-md">No damaged items.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

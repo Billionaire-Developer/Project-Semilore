@@ -1,0 +1,210 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>ScholarTrack - {% block title %}Dashboard{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-primary": "#b6c4ff",
+                        "error-container": "#ffdad6",
+                        "on-surface": "#191c1d",
+                        "status-success": "#059669",
+                        "on-error": "#ffffff",
+                        "tertiary": "#4b1c00",
+                        "on-tertiary-container": "#f39461",
+                        "status-warning": "#D97706",
+                        "on-primary-fixed": "#00164e",
+                        "surface-container-high": "#e7e8e9",
+                        "on-background": "#191c1d",
+                        "on-surface-variant": "#444651",
+                        "primary-container": "#1e3a8a",
+                        "surface-bright": "#f8f9fa",
+                        "tertiary-fixed": "#ffdbcb",
+                        "inverse-on-surface": "#f0f1f2",
+                        "surface": "#f8f9fa",
+                        "secondary-container": "#d9dff5",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#edeeef",
+                        "outline": "#757682",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed-dim": "#ffb691",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed": "#dce2f7",
+                        "on-tertiary-fixed": "#341100",
+                        "on-primary-container": "#90a8ff",
+                        "surface-container-highest": "#e1e3e4",
+                        "secondary": "#575e70",
+                        "on-secondary": "#ffffff",
+                        "surface-dim": "#d9dadb",
+                        "on-primary-fixed-variant": "#264191",
+                        "surface-tint": "#4059aa",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed-dim": "#b6c4ff",
+                        "outline-variant": "#c5c5d3",
+                        "primary-fixed": "#dce1ff",
+                        "surface-variant": "#e1e3e4",
+                        "primary": "#00236f",
+                        "inverse-surface": "#2e3132",
+                        "on-error-container": "#93000a",
+                        "border-subtle": "#E5E7EB",
+                        "on-secondary-container": "#5c6274",
+                        "on-secondary-fixed": "#141b2b",
+                        "on-secondary-fixed-variant": "#404758",
+                        "surface-gray": "#F3F4F6",
+                        "surface-container-low": "#f3f4f5",
+                        "secondary-fixed-dim": "#c0c6db",
+                        "background": "#f8f9fa",
+                        "tertiary-container": "#6e2c00",
+                        "on-tertiary-fixed-variant": "#773205"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "margin-desktop": "40px",
+                        "margin-mobile": "16px",
+                        "stack-lg": "24px",
+                        "stack-md": "16px",
+                        "stack-sm": "8px",
+                        "base": "4px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+        /* Custom ring for focus states based on Brand Style */
+        .form-input:focus, .form-select:focus, .form-check-input:focus {
+            --tw-ring-color: theme('colors.primary');
+            --tw-ring-offset-width: 2px;
+            --tw-ring-offset-color: #fff;
+            border-color: theme('colors.primary');
+            box-shadow: 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color), 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+        }
+        .soft-shadow {
+            box-shadow: 0px 4px 12px rgba(17, 24, 39, 0.05);
+        }
+        /* Custom scrollbar for table */
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f3f4f5; 
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #c5c5d3; 
+            border-radius: 4px;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-background min-h-screen flex flex-col font-body-md text-on-surface {% block body_class %}{% endblock %}">
+
+    <!-- TopNavBar -->
+    {% if user.is_authenticated %}
+    <header class="bg-secondary dark:bg-on-surface fixed top-0 w-full h-16 shadow-sm z-50 transition-all duration-200 ease-in-out">
+        <div class="flex items-center justify-between px-margin-mobile md:px-margin-desktop max-w-[1280px] mx-auto w-full h-full">
+            <!-- Brand -->
+            <div class="flex items-center gap-stack-md">
+                <a href="{% url 'dashboard' %}" class="font-headline-md text-headline-md font-bold text-on-primary" style="text-decoration: none;">ScholarTrack</a>
+            </div>
+            
+            <!-- Desktop Navigation Links -->
+            <nav class="hidden md:flex items-center gap-stack-lg h-full">
+                <a class="h-full flex items-center text-secondary-container hover:text-on-primary transition-colors hover:bg-on-secondary-fixed-variant/10 transition-all duration-200 ease-in-out px-4 font-body-md text-body-md" href="{% url 'dashboard' %}">Dashboard</a>
+                <a class="h-full flex items-center text-secondary-container hover:text-on-primary transition-colors hover:bg-on-secondary-fixed-variant/10 transition-all duration-200 ease-in-out px-4 font-body-md text-body-md" href="{% url 'item-list' %}">Inventory</a>
+                <a class="h-full flex items-center text-secondary-container hover:text-on-primary transition-colors hover:bg-on-secondary-fixed-variant/10 transition-all duration-200 ease-in-out px-4 font-body-md text-body-md" href="{% url 'department-list' %}">Departments</a>
+                <a class="h-full flex items-center text-secondary-container hover:text-on-primary transition-colors hover:bg-on-secondary-fixed-variant/10 transition-all duration-200 ease-in-out px-4 font-body-md text-body-md" href="{% url 'audit-list' %}">Audits</a>
+            </nav>
+
+            <!-- Search & Actions -->
+            <div class="flex items-center gap-stack-md">
+                <div class="hidden lg:flex items-center bg-surface-container-highest/20 rounded-full px-4 py-1.5 focus-within:ring-2 focus-within:ring-on-primary">
+                    <span class="material-symbols-outlined text-secondary-container text-[20px] mr-2">search</span>
+                    <form action="{% url 'item-list' %}" method="get" class="m-0 p-0 flex items-center">
+                        <input name="q" class="bg-transparent border-none text-on-primary placeholder-secondary-container focus:ring-0 font-body-md text-body-md w-48 outline-none" placeholder="Search assets..." type="text"/>
+                    </form>
+                </div>
+                
+                <a href="{% url 'profile' %}" aria-label="account_circle" class="text-secondary-container hover:text-on-primary transition-colors p-2 rounded-full hover:bg-on-secondary-fixed-variant/10 flex items-center">
+                    <span class="material-symbols-outlined">account_circle</span>
+                </a>
+                <form action="{% url 'logout' %}" method="post" class="m-0 p-0 flex items-center">
+                    {% csrf_token %}
+                    <button type="submit" aria-label="logout" class="text-secondary-container hover:text-on-primary transition-colors p-2 rounded-full hover:bg-on-secondary-fixed-variant/10 flex items-center">
+                        <span class="material-symbols-outlined">logout</span>
+                    </button>
+                </form>
+
+                <!-- Mobile Menu Toggle -->
+                <button aria-label="menu" class="md:hidden text-secondary-container hover:text-on-primary transition-colors p-2 rounded-full">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+            </div>
+        </div>
+    </header>
+    {% endif %}
+
+    <!-- Main Canvas -->
+    <main class="flex-grow {% if user.is_authenticated %}pt-24{% else %}pt-8{% endif %} pb-stack-lg px-margin-mobile md:px-margin-desktop max-w-[1280px] mx-auto w-full flex flex-col gap-gutter">
+        {% include "components/alerts.html" %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full py-8 mt-auto bg-on-surface dark:bg-surface-container-lowest">
+        <div class="flex flex-col md:flex-row justify-between items-center px-margin-mobile md:px-margin-desktop max-w-[1280px] mx-auto w-full gap-stack-md">
+            <div class="font-headline-sm text-headline-sm font-bold text-surface">ScholarTrack</div>
+            <div class="flex flex-wrap justify-center gap-x-6 gap-y-2">
+                <a class="font-body-md text-body-md text-surface-variant hover:text-surface-bright hover:opacity-80 transition-opacity duration-150" href="#">Privacy Policy</a>
+                <a class="font-body-md text-body-md text-surface-variant hover:text-surface-bright hover:opacity-80 transition-opacity duration-150" href="#">Terms of Service</a>
+                <a class="font-body-md text-body-md text-surface-variant hover:text-surface-bright hover:opacity-80 transition-opacity duration-150" href="#">Faculty Support</a>
+                <a class="font-body-md text-body-md text-surface-variant hover:text-surface-bright hover:opacity-80 transition-opacity duration-150" href="#">Contact Admin</a>
+            </div>
+            <div class="font-body-md text-body-md text-surface text-center md:text-right">
+                © 2024 ScholarTrack Institutional Asset Management
+            </div>
+        </div>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

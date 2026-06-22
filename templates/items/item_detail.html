@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}{{ item.uid }} — {{ item.name }}{% endblock %}
+{% block content %}
+
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-start justify-between gap-stack-md">
+    <div>
+        <h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-surface">{{ item.name }}</h1>
+        <div class="flex items-center gap-2 mt-1 flex-wrap">
+            <span class="font-mono text-xs bg-surface-container text-on-surface-variant px-2 py-0.5 rounded">{{ item.uid }}</span>
+            <span class="text-outline text-sm">·</span>
+            <span class="font-body-md text-[13px] text-outline">UUID: {{ item.uuid }}</span>
+        </div>
+    </div>
+    <div class="flex flex-wrap gap-2">
+        {% if can_edit %}
+        <a href="{% url 'item-edit' item.pk %}" style="text-decoration:none;" class="inline-flex items-center gap-1.5 border border-outline-variant text-on-surface-variant hover:bg-surface-container px-4 py-2 rounded-lg font-label-caps text-label-caps transition-colors">
+            <span class="material-symbols-outlined text-[16px]">edit</span> Edit
+        </a>
+        {% endif %}
+        <a href="{% url 'item-label' item.pk %}" target="_blank" style="text-decoration:none;" class="inline-flex items-center gap-1.5 border border-primary text-primary hover:bg-primary hover:text-on-primary px-4 py-2 rounded-lg font-label-caps text-label-caps transition-colors">
+            <span class="material-symbols-outlined text-[16px]">print</span> Print Label
+        </a>
+    </div>
+</div>
+
+<!-- Main Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+    <!-- QR Code -->
+    <div class="bg-surface-container-lowest border border-border-subtle rounded-xl shadow-sm p-stack-md flex flex-col items-center justify-center text-center gap-3">
+        {% if item.qr_code_image %}
+        <img src="{{ item.qr_code_image.url }}" alt="QR code for {{ item.uid }}" class="w-44 h-44 object-contain rounded-lg border border-border-subtle p-2 bg-white">
+        {% else %}
+        <div class="w-44 h-44 rounded-lg border-2 border-dashed border-border-subtle flex items-center justify-center bg-surface-container">
+            <span class="material-symbols-outlined text-[48px] text-outline">qr_code_2</span>
+        </div>
+        {% endif %}
+        <p class="font-label-caps text-label-caps text-on-surface-variant break-all text-center">{{ verify_url }}</p>
+        <a href="{% url 'verify-item' item.uuid %}" style="text-decoration:none;" class="inline-flex items-center gap-1.5 bg-status-success/10 text-status-success hover:bg-status-success hover:text-white px-4 py-2 rounded-lg font-label-caps text-label-caps transition-colors">
+            <span class="material-symbols-outlined text-[16px]">qr_code_scanner</span> Verify Page
+        </a>
+    </div>
+
+    <!-- Asset Details -->
+    <div class="lg:col-span-2 flex flex-col gap-stack-md">
+        <div class="bg-surface-container-lowest border border-border-subtle rounded-xl shadow-sm p-stack-md">
+            <h2 class="font-headline-sm text-headline-sm text-on-surface mb-stack-md border-b border-border-subtle pb-2">Asset Details</h2>
+            <dl class="grid grid-cols-2 gap-x-8 gap-y-3">
+                <dt class="font-label-caps text-label-caps text-on-surface-variant uppercase">Department</dt>
+                <dd class="font-body-md text-body-md text-on-surface">{{ item.department.name }}</dd>
+                <dt class="font-label-caps text-label-caps text-on-surface-variant uppercase">Office</dt>
+                <dd class="font-body-md text-body-md text-on-surface">{{ item.office|default:"—" }}</dd>
+                <dt class="font-label-caps text-label-caps text-on-surface-variant uppercase">Category</dt>
+                <dd class="font-body-md text-body-md text-on-surface">{{ item.category|default:"—" }}</dd>
+                <dt class="font-label-caps text-label-caps text-on-surface-variant uppercase">Serial No.</dt>
+                <dd class="font-mono text-sm text-on-surface">{{ item.serial_number|default:"—" }}</dd>
+                <dt class="font-label-caps text-label-caps text-on-surface-variant uppercase">Status</dt>
+                <dd>
+                    {% if item.status == 'active' %}
+                        <span class="inline-flex items-center bg-secondary-fixed text-on-secondary-fixed-variant font-label-caps text-[11px] px-2.5 py-1 rounded-full">Active</span>
+                    {% elif item.status == 'maintenance' %}
+                        <span class="inline-flex items-center bg-error-container text-on-error-container font-label-caps text-[11px] px-2.5 py-1 rounded-full">Maintenance</span>
+                    {% else %}
+                        <span class="inline-flex items-center bg-surface-container text-on-surface-variant font-label-caps text-[11px] px-2.5 py-1 rounded-full">{{ item.status }}</span>
+                    {% endif %}
+                </dd>
+                <dt class="font-label-caps text-label-caps text-on-surface-variant uppercase">Avg. Condition</dt>
+                <dd class="font-body-md text-body-md text-on-surface">{{ item.average_condition|default:"—" }}</dd>
+            </dl>
+        </div>
+        <div class="flex flex-wrap gap-2">
+            <a href="{% url 'inspection-add' item.pk %}" style="text-decoration:none;" class="bg-primary hover:bg-on-primary-fixed-variant text-on-primary px-4 py-2 rounded-lg font-label-caps text-label-caps flex items-center gap-1.5 transition-colors">
+                <span class="material-symbols-outlined text-[16px]">health_and_safety</span> New Inspection
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- History Split -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+    <!-- Inspections -->
+    <div class="bg-surface-container-lowest border border-border-subtle rounded-xl shadow-sm overflow-hidden">
+        <div class="p-stack-md border-b border-border-subtle bg-surface-bright flex items-center justify-between">
+            <h2 class="font-headline-sm text-headline-sm text-on-surface">Recent Inspections</h2>
+        </div>
+        <div class="divide-y divide-border-subtle">
+            {% for i in inspections %}
+            <div class="flex items-center justify-between px-stack-md py-3">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px] text-outline">health_and_safety</span>
+                    <div>
+                        <p class="font-body-md text-body-md text-on-surface">Score: {{ i.condition_score }}/5</p>
+                        <p class="text-[12px] text-outline">{{ i.inspected_at|date:"M j, Y" }}</p>
+                    </div>
+                </div>
+                {% if i.is_audit_auto %}
+                <span class="inline-flex items-center bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-caps text-[11px] px-2 py-0.5 rounded-full">Audit Auto</span>
+                {% endif %}
+            </div>
+            {% empty %}
+            <div class="px-stack-md py-6 text-center text-on-surface-variant font-body-md text-body-md">No inspections recorded.</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Transfers -->
+    <div class="bg-surface-container-lowest border border-border-subtle rounded-xl shadow-sm overflow-hidden">
+        <div class="p-stack-md border-b border-border-subtle bg-surface-bright">
+            <h2 class="font-headline-sm text-headline-sm text-on-surface">Transfer History</h2>
+        </div>
+        <div class="divide-y divide-border-subtle">
+            {% for t in transfers %}
+            <div class="flex items-center gap-3 px-stack-md py-3">
+                <span class="material-symbols-outlined text-[18px] text-outline">swap_horiz</span>
+                <div>
+                    <p class="font-body-md text-body-md text-on-surface">→ {{ t.to_department|default:"?" }} / {{ t.to_office|default:"—" }}</p>
+                    <p class="text-[12px] text-outline">{{ t.moved_at|date:"M j, Y" }}</p>
+                </div>
+            </div>
+            {% empty %}
+            <div class="px-stack-md py-6 text-center text-on-surface-variant font-body-md text-body-md">No transfers recorded.</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

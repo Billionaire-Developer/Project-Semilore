@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}{% if object %}Edit{% else %}Add{% endif %} Item{% endblock %}
+{% block content %}
+    {% if object %}
+        {% include "components/generic_form.html" with form_title="Edit Asset" %}
+    {% else %}
+        {% include "components/generic_form.html" with form_title="Add New Asset" %}
+    {% endif %}
+{% endblock %}

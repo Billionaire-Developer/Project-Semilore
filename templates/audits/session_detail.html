@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}{{ session.title }}{% endblock %}
+{% block content %}
+
+<!-- Header -->
+<div class="flex flex-col md:flex-row md:items-start justify-between gap-stack-md">
+    <div>
+        <h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-surface">{{ session.title }}</h1>
+        <p class="font-body-md text-body-md text-on-surface-variant mt-1">
+            {{ session.department.name }}{% if session.office %} · {{ session.office.name }}{% endif %}
+        </p>
+    </div>
+    {% if session.status == 'active' %}
+        <span class="inline-flex items-center bg-secondary-fixed text-on-secondary-fixed-variant font-label-caps text-[13px] px-3 py-1.5 rounded-full">Active</span>
+    {% elif session.status == 'closed' %}
+        <span class="inline-flex items-center bg-surface-container text-on-surface-variant font-label-caps text-[13px] px-3 py-1.5 rounded-full">Closed</span>
+    {% else %}
+        <span class="inline-flex items-center bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-caps text-[13px] px-3 py-1.5 rounded-full">Draft</span>
+    {% endif %}
+</div>
+
+<!-- Progress Bar -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-xl p-stack-md shadow-sm">
+    <div class="flex items-center justify-between font-body-md text-body-md text-on-surface-variant mb-2">
+        <span id="audit-progress-text">{{ report.verified_count }} / {{ report.expected_count }} verified</span>
+        <span class="font-semibold text-on-surface">{{ session.progress_pct }}%</span>
+    </div>
+    <div class="w-full bg-surface-container rounded-full h-3">
+        <div id="audit-progress-bar" class="bg-primary h-3 rounded-full transition-all duration-500" style="width: {{ session.progress_pct }}%"></div>
+    </div>
+</div>
+
+<!-- Actions -->
+<div class="flex flex-wrap gap-2">
+    {% if session.status == 'draft' %}
+    <form method="post" action="{% url 'audit-activate' session.pk %}">{% csrf_token %}
+        <button type="submit" class="bg-status-success hover:opacity-90 text-white px-5 py-2.5 rounded-lg font-label-caps text-label-caps flex items-center gap-2 transition-opacity">
+            <span class="material-symbols-outlined text-[18px]">play_circle</span> Activate Audit
+        </button>
+    </form>
+    {% endif %}
+    {% if session.status == 'active' %}
+    <a href="{% url 'audit-scanner' session.pk %}" style="text-decoration:none;" class="bg-primary hover:bg-on-primary-fixed-variant text-on-primary px-5 py-2.5 rounded-lg font-label-caps text-label-caps flex items-center gap-2 transition-colors">
+        <span class="material-symbols-outlined text-[18px]">qr_code_scanner</span> Open Scanner
+    </a>
+    <form method="post" action="{% url 'audit-close' session.pk %}" onsubmit="return confirm('Close this audit?')">{% csrf_token %}
+        <button type="submit" class="border border-error text-error hover:bg-error hover:text-on-error px-5 py-2.5 rounded-lg font-label-caps text-label-caps flex items-center gap-2 transition-colors">
+            <span class="material-symbols-outlined text-[18px]">lock</span> Close Audit
+        </button>
+    </form>
+    {% endif %}
+    {% if session.status == 'closed' %}
+    <a href="{% url 'audit-report' session.pk %}" style="text-decoration:none;" class="border border-primary text-primary hover:bg-primary hover:text-on-primary px-5 py-2.5 rounded-lg font-label-caps text-label-caps flex items-center gap-2 transition-colors">
+        <span class="material-symbols-outlined text-[18px]">description</span> View Report
+    </a>
+    {% endif %}
+</div>
+
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-stack-md">
+    <div class="bg-secondary-fixed text-on-secondary-fixed-variant rounded-xl p-stack-md text-center hover:-translate-y-[2px] transition-transform">
+        <div class="font-headline-md text-headline-md font-bold text-status-success">{{ report.verified_count }}</div>
+        <div class="font-label-caps text-label-caps mt-1">Verified</div>
+    </div>
+    <div class="bg-error-container text-on-error-container rounded-xl p-stack-md text-center hover:-translate-y-[2px] transition-transform">
+        <div class="font-headline-md text-headline-md font-bold">{{ report.missing_items|length }}</div>
+        <div class="font-label-caps text-label-caps mt-1">Missing</div>
+    </div>
+    <div class="bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-xl p-stack-md text-center hover:-translate-y-[2px] transition-transform">
+        <div class="font-headline-md text-headline-md font-bold">{{ report.unexpected|length }}</div>
+        <div class="font-label-caps text-label-caps mt-1">Unexpected</div>
+    </div>
+</div>
+
+<!-- Verifications Table -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-xl shadow-sm overflow-hidden">
+    <div class="p-stack-md border-b border-border-subtle bg-surface-bright">
+        <h2 class="font-headline-sm text-headline-sm text-on-surface">Recent Verifications</h2>
+    </div>
+    <div class="overflow-x-auto custom-scrollbar">
+        <table class="w-full text-left border-collapse min-w-[560px]">
+            <thead>
+                <tr class="bg-on-surface text-surface">
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">Item</th>
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">Status</th>
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">By</th>
+                    <th class="font-label-caps text-label-caps py-3 px-stack-md font-semibold">When</th>
+                </tr>
+            </thead>
+            <tbody class="font-body-md text-body-md">
+                {% for v in verifications %}
+                <tr class="border-b border-border-subtle hover:bg-surface-gray transition-colors">
+                    <td class="py-3 px-stack-md">
+                        <span class="font-mono text-xs bg-surface-container px-1.5 py-0.5 rounded text-on-surface-variant">{{ v.item.uid }}</span>
+                        <span class="text-on-surface ml-2">{{ v.item.name }}</span>
+                    </td>
+                    <td class="py-3 px-stack-md">
+                        {% if v.status == 'verified' %}
+                            <span class="inline-flex items-center bg-secondary-fixed text-on-secondary-fixed-variant font-label-caps text-[11px] px-2.5 py-1 rounded-full">Verified</span>
+                        {% elif v.status == 'damaged' %}
+                            <span class="inline-flex items-center bg-error-container text-on-error-container font-label-caps text-[11px] px-2.5 py-1 rounded-full">Damaged</span>
+                        {% else %}
+                            <span class="inline-flex items-center bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-caps text-[11px] px-2.5 py-1 rounded-full">{{ v.get_status_display }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-3 px-stack-md text-on-surface-variant">{{ v.verified_by.username|default:"—" }}</td>
+                    <td class="py-3 px-stack-md text-[13px] text-outline">{{ v.verified_at|timesince }} ago</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="py-8 text-center text-on-surface-variant">No verifications yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

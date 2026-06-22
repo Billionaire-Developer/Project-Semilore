@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Sign Up — ScholarTrack{% endblock %}
+{% block body_class %}bg-surface flex items-center justify-center py-12{% endblock %}
+
+{% block content %}
+<div class="w-full max-w-md mx-auto">
+    <div class="bg-surface-container-lowest border border-border-subtle rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] overflow-hidden">
+        
+        <!-- Header -->
+        <div class="bg-secondary-container px-8 py-10 text-center relative overflow-hidden">
+            <div class="relative z-10">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-surface-container-lowest text-secondary mb-4 shadow-sm">
+                    <span class="material-symbols-outlined text-[32px]">person_add</span>
+                </div>
+                <h1 class="font-headline-md text-headline-md font-bold text-on-surface">Create Account</h1>
+                <p class="font-body-md text-body-md text-on-surface-variant mt-2">Join ScholarTrack to manage inventory</p>
+            </div>
+            <!-- Decorative background element -->
+            <div class="absolute top-0 right-0 w-full h-full bg-gradient-to-bl from-on-secondary-container/5 to-transparent -z-0"></div>
+        </div>
+
+        <!-- Form -->
+        <div class="px-8 py-8">
+            <form method="post" class="space-y-5">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                    <div class="bg-error-container text-on-error-container p-4 rounded-lg font-body-md text-sm border border-error/20 flex items-start gap-2">
+                        <span class="material-symbols-outlined text-[20px]">error</span>
+                        <div>{{ form.non_field_errors }}</div>
+                    </div>
+                {% endif %}
+                
+                {% for field in form %}
+                    <div>
+                        <label for="{{ field.id_for_label }}" class="block font-label-caps text-label-caps text-on-surface-variant mb-1.5">{{ field.label }}</label>
+                        <div class="relative">
+                            <input type="{{ field.field.widget.input_type|default:'text' }}" name="{{ field.name }}" id="{{ field.id_for_label }}" {% if field.field.required %}required{% endif %}
+                                class="w-full px-4 py-2.5 bg-surface-container-low border border-border-subtle rounded-lg text-on-surface placeholder-outline-variant focus:ring-2 focus:ring-primary focus:border-primary transition-all font-body-md text-body-md">
+                        </div>
+                        {% if field.help_text %}
+                            <p class="text-on-surface-variant text-xs mt-1">{{ field.help_text|safe }}</p>
+                        {% endif %}
+                        {% if field.errors %}
+                            <p class="text-error text-xs mt-1">{{ field.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="w-full bg-primary hover:bg-on-primary-fixed-variant text-on-primary font-headline-sm text-[16px] py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 mt-6">
+                    Sign Up
+                </button>
+            </form>
+
+            <div class="mt-8 text-center">
+                <p class="font-body-md text-body-md text-on-surface-variant">
+                    Already have an account? 
+                    <a href="{% url 'login' %}" class="text-primary hover:text-on-primary-fixed-variant font-medium transition-colors">Sign In</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

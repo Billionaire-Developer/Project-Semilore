@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}{% if object %}Edit{% else %}Add{% endif %} Office{% endblock %}
+{% block content %}
+    {% if object %}
+        {% include "components/generic_form.html" with form_title="Edit Office" %}
+    {% else %}
+        {% include "components/generic_form.html" with form_title="Add New Office" %}
+    {% endif %}
+{% endblock %}

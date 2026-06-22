@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Inspection Report — {{ inspection.item.uid }}</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            color: #191c1d;
+            background: #fff;
+            padding: 0;
+        }
+
+        /* Cover Header */
+        .cover-header {
+            background: #00236f;
+            color: #fff;
+            padding: 32px 40px 24px;
+        }
+        .cover-header .brand {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .cover-header .tagline {
+            font-size: 11px;
+            opacity: 0.7;
+            margin-top: 4px;
+        }
+        .cover-header .report-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-top: 24px;
+        }
+        .cover-header .report-subtitle {
+            font-size: 13px;
+            opacity: 0.8;
+            margin-top: 6px;
+        }
+        .cover-header .meta-row {
+            display: flex;
+            gap: 32px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .cover-header .meta-item label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            opacity: 0.6;
+            display: block;
+        }
+        .cover-header .meta-item span {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Body content */
+        .content {
+            padding: 32px 40px;
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: 28px;
+        }
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: #00236f;
+            border-bottom: 2px solid #00236f;
+            padding-bottom: 6px;
+            margin-bottom: 14px;
+        }
+
+        /* Info Grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px 32px;
+        }
+        .info-item label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: #757682;
+            display: block;
+            margin-bottom: 2px;
+        }
+        .info-item span {
+            font-size: 13px;
+            color: #191c1d;
+            font-weight: 500;
+        }
+
+        /* Status Badge */
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 100px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .badge-success { background: #d1fae5; color: #065f46; }
+        .badge-warning { background: #ffdbcb; color: #773205; }
+        .badge-error { background: #ffdad6; color: #93000a; }
+        .badge-info { background: #dce2f7; color: #264191; }
+
+        /* Score Bar */
+        .score-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 6px;
+        }
+        .score-bar-track {
+            flex: 1;
+            height: 8px;
+            background: #edeeef;
+            border-radius: 4px;
+        }
+        .score-bar-fill {
+            height: 8px;
+            border-radius: 4px;
+            background: #00236f;
+        }
+        .score-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #00236f;
+            min-width: 36px;
+        }
+
+        /* QR Code Block */
+        .qr-block {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            background: #f8f9fa;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 16px;
+        }
+        .qr-block img {
+            width: 120px;
+            height: 120px;
+            border: 1px solid #E5E7EB;
+            padding: 4px;
+            background: #fff;
+            border-radius: 4px;
+        }
+        .qr-block .qr-info {
+            flex: 1;
+        }
+        .qr-block .qr-info p {
+            font-size: 11px;
+            color: #444651;
+            line-height: 1.6;
+        }
+        .qr-block .qr-url {
+            font-size: 10px;
+            color: #757682;
+            word-break: break-all;
+            margin-top: 8px;
+            font-family: monospace;
+        }
+
+        /* Comments Box */
+        .comments-box {
+            background: #f8f9fa;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            padding: 12px 14px;
+            font-size: 12px;
+            color: #444651;
+            line-height: 1.7;
+            min-height: 60px;
+        }
+
+        /* Compliance paragraph */
+        .compliance-text {
+            font-size: 11px;
+            color: #757682;
+            line-height: 1.8;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            padding: 14px;
+            background: #f8f9fa;
+        }
+
+        /* Signature Row */
+        .signature-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 36px;
+        }
+        .sig-box {
+            border-top: 1px solid #191c1d;
+            padding-top: 8px;
+        }
+        .sig-box .sig-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: #757682;
+        }
+
+        /* Footer */
+        .pdf-footer {
+            background: #191c1d;
+            color: #f0f1f2;
+            padding: 16px 40px;
+            font-size: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .pdf-footer .footer-brand {
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        /* Page break control */
+        @media print {
+            .page-break { page-break-before: always; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Cover Header -->
+<div class="cover-header">
+    <div class="brand">ScholarTrack</div>
+    <div class="tagline">Institutional Asset Management Platform · Inspection Division</div>
+    <div class="report-title">Asset Inspection Report</div>
+    <div class="report-subtitle">
+        Formal record of physical asset condition assessment conducted by authorized personnel.
+    </div>
+    <div class="meta-row">
+        <div class="meta-item">
+            <label>Report ID</label>
+            <span>INS-{{ inspection.pk|stringformat:"05d" }}</span>
+        </div>
+        <div class="meta-item">
+            <label>Inspection Date</label>
+            <span>{{ inspection.inspected_at|date:"N j, Y" }}</span>
+        </div>
+        <div class="meta-item">
+            <label>Asset UID</label>
+            <span>{{ inspection.item.uid }}</span>
+        </div>
+        <div class="meta-item">
+            <label>Inspector</label>
+            <span>{{ inspection.inspector.get_full_name|default:inspection.inspector.username }}</span>
+        </div>
+    </div>
+</div>
+
+<div class="content">
+
+    <!-- SECTION 1: Asset Identification -->
+    <div class="section">
+        <div class="section-title">1. Asset Identification</div>
+        <div class="info-grid">
+            <div class="info-item">
+                <label>Asset Name</label>
+                <span>{{ inspection.item.name }}</span>
+            </div>
+            <div class="info-item">
+                <label>Asset UID</label>
+                <span>{{ inspection.item.uid }}</span>
+            </div>
+            <div class="info-item">
+                <label>Serial Number</label>
+                <span>{{ inspection.item.serial_number|default:"N/A" }}</span>
+            </div>
+            <div class="info-item">
+                <label>Category</label>
+                <span>{{ inspection.item.category|default:"N/A" }}</span>
+            </div>
+            <div class="info-item">
+                <label>Department</label>
+                <span>{{ inspection.item.department.name }}</span>
+            </div>
+            <div class="info-item">
+                <label>Office / Room</label>
+                <span>{{ inspection.item.office|default:"N/A" }}</span>
+            </div>
+            <div class="info-item">
+                <label>Asset Status</label>
+                <span>
+                    {% if inspection.item.status == 'active' %}
+                        <span class="badge badge-success">Active</span>
+                    {% elif inspection.item.status == 'maintenance' %}
+                        <span class="badge badge-error">Maintenance</span>
+                    {% else %}
+                        <span class="badge badge-info">{{ inspection.item.status }}</span>
+                    {% endif %}
+                </span>
+            </div>
+            <div class="info-item">
+                <label>Purchase Date</label>
+                <span>{{ inspection.item.purchase_date|date:"N j, Y"|default:"N/A" }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 2: Inspection Results -->
+    <div class="section">
+        <div class="section-title">2. Inspection Results</div>
+        <div class="info-grid" style="margin-bottom: 14px;">
+            <div class="info-item">
+                <label>Inspector</label>
+                <span>{{ inspection.inspector.get_full_name|default:inspection.inspector.username }}</span>
+            </div>
+            <div class="info-item">
+                <label>Inspection Date & Time</label>
+                <span>{{ inspection.inspected_at|date:"N j, Y, P" }}</span>
+            </div>
+            <div class="info-item">
+                <label>Functional</label>
+                <span>
+                    {% if inspection.functional %}
+                        <span class="badge badge-success">Yes — Operational</span>
+                    {% else %}
+                        <span class="badge badge-error">No — Non-Functional</span>
+                    {% endif %}
+                </span>
+            </div>
+            <div class="info-item">
+                <label>Inspection Type</label>
+                <span>{% if inspection.is_audit_auto %}Automated Audit Check{% else %}Manual Inspection{% endif %}</span>
+            </div>
+        </div>
+
+        <label style="font-size:10px; text-transform:uppercase; letter-spacing:0.07em; color:#757682; display:block; margin-bottom:4px;">Condition Score</label>
+        <div class="score-container">
+            <div class="score-value">{{ inspection.condition_score }}/5</div>
+            <div class="score-bar-track">
+                <div class="score-bar-fill" style="width: {{ inspection.condition_score|default:0 }}0%"></div>
+            </div>
+            <span style="font-size:11px; color:#757682;">
+                {% if inspection.condition_score >= 4 %}Excellent
+                {% elif inspection.condition_score >= 3 %}Good
+                {% elif inspection.condition_score >= 2 %}Fair
+                {% else %}Poor{% endif %}
+            </span>
+        </div>
+    </div>
+
+    <!-- SECTION 3: Inspector Comments -->
+    <div class="section">
+        <div class="section-title">3. Inspector Comments & Observations</div>
+        <div class="comments-box">
+            {{ inspection.comments|default:"No additional comments were recorded for this inspection." }}
+        </div>
+    </div>
+
+    <!-- SECTION 4: QR Verification -->
+    <div class="section">
+        <div class="section-title">4. Asset QR Verification</div>
+        <div class="qr-block">
+            {% if inspection.item.qr_code_image %}
+            <img src="{{ qr_absolute_path }}" alt="Asset QR Code"/>
+            {% else %}
+            <div style="width:120px; height:120px; border:2px dashed #E5E7EB; border-radius:6px; display:flex; align-items:center; justify-content:center;">
+                <span style="font-size:10px; color:#757682; text-align:center;">QR Not Generated</span>
+            </div>
+            {% endif %}
+            <div class="qr-info">
+                <p>
+                    The QR code displayed here is permanently encoded to this asset's unique verification URL. 
+                    Scanning this code using any mobile device will direct the user to the asset's live profile 
+                    within the ScholarTrack platform, confirming its identity, current condition status, and 
+                    audit history in real time.
+                </p>
+                <p style="margin-top: 8px;">
+                    This QR code should be affixed to the physical asset in a clearly visible location to facilitate 
+                    rapid identification during audits and inspections. The code is tamper-evident and permanently 
+                    bound to the unique asset identifier below.
+                </p>
+                <p class="qr-url">{{ verify_url }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 5: Compliance Statement -->
+    <div class="section">
+        <div class="section-title">5. Institutional Compliance Statement</div>
+        <div class="compliance-text">
+            This inspection report has been generated in accordance with the institutional asset management 
+            policy and serves as an official record of the physical condition assessment of the asset identified 
+            above. All inspection data is stored securely within the ScholarTrack platform and is subject to 
+            institutional audit and regulatory review. The condition score, functional status, and observations 
+            recorded herein reflect the state of the asset at the time of inspection and do not constitute 
+            a warranty or guarantee of future performance.
+            <br/><br/>
+            Asset managers are advised to review assets scoring below 3.0 for maintenance scheduling. Assets 
+            marked as non-functional should be escalated to the relevant departmental officer for 
+            procurement review. This document should be retained in compliance with the institution's 
+            record-keeping policy for a minimum of three (3) years from the date of inspection.
+        </div>
+    </div>
+
+    <!-- Next Due Date -->
+    {% if inspection.next_due_date %}
+    <div class="section">
+        <div class="section-title">6. Next Inspection Schedule</div>
+        <div class="info-grid">
+            <div class="info-item">
+                <label>Next Inspection Due</label>
+                <span>{{ inspection.next_due_date|date:"N j, Y" }}</span>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Signature Row -->
+    <div class="signature-row">
+        <div class="sig-box">
+            <div class="sig-label">Inspector Signature & Date</div>
+        </div>
+        <div class="sig-box">
+            <div class="sig-label">Department Head Acknowledgement</div>
+        </div>
+    </div>
+
+</div>
+
+<!-- PDF Footer -->
+<div class="pdf-footer">
+    <div>
+        <div class="footer-brand">ScholarTrack</div>
+        <div>Institutional Asset Management · Confidential</div>
+    </div>
+    <div style="text-align:right;">
+        <div>Report ID: INS-{{ inspection.pk|stringformat:"05d" }}</div>
+        <div>Generated: {{ generated_at|date:"N j, Y, P" }}</div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,23 @@
+{% if messages %}
+<div class="flex flex-col gap-2">
+    {% for message in messages %}
+    <div class="flex items-start gap-3 px-4 py-3 rounded-lg font-body-md text-body-md
+        {% if message.tags == 'success' %}bg-secondary-fixed text-on-secondary-fixed-variant border border-status-success/20
+        {% elif message.tags == 'error' or message.tags == 'danger' %}bg-error-container text-on-error-container border border-error/20
+        {% elif message.tags == 'warning' %}bg-tertiary-fixed text-on-tertiary-fixed-variant border border-on-tertiary-fixed-variant/20
+        {% else %}bg-secondary-container/30 text-on-surface-variant border border-border-subtle
+        {% endif %}" role="alert">
+        <span class="material-symbols-outlined text-[20px] mt-0.5 flex-shrink-0">
+            {% if message.tags == 'success' %}check_circle
+            {% elif message.tags == 'error' or message.tags == 'danger' %}error
+            {% elif message.tags == 'warning' %}warning
+            {% else %}info{% endif %}
+        </span>
+        <span class="flex-1">{{ message }}</span>
+        <button type="button" onclick="this.parentElement.remove()" class="opacity-60 hover:opacity-100 transition-opacity flex-shrink-0">
+            <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}

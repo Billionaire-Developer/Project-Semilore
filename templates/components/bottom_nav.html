@@ -1,0 +1,16 @@
+<nav class="bottom-nav d-md-none no-print">
+  <a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+    <i class="bi bi-speedometer2 d-block fs-5"></i>Home
+  </a>
+  <a href="{% url 'item-list' %}">
+    <i class="bi bi-box d-block fs-5"></i>Items
+  </a>
+  {% if can_run_audits %}
+  <a href="{% url 'audit-list' %}">
+    <i class="bi bi-clipboard-check d-block fs-5"></i>Audits
+  </a>
+  {% endif %}
+  <a href="{% url 'profile' %}">
+    <i class="bi bi-person d-block fs-5"></i>Profile
+  </a>
+</nav>

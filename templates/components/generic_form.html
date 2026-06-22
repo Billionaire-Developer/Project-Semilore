@@ -1,0 +1,122 @@
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+    <!-- Main Form Card -->
+    <div class="lg:col-span-8 bg-surface-container-lowest border border-border-subtle rounded-xl soft-shadow p-stack-lg md:p-stack-lg">
+        <h1 class="font-headline-lg text-on-surface mb-stack-md">{{ form_title|default:"Form" }}</h1>
+        <form method="post" enctype="multipart/form-data" class="space-y-stack-md">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="bg-error-container text-on-error-container p-4 rounded-lg font-body-md text-sm border border-error/20 flex items-start gap-2 mb-stack-md">
+                    <span class="material-symbols-outlined text-[20px]">error</span>
+                    <div>{{ form.non_field_errors }}</div>
+                </div>
+            {% endif %}
+
+            <div class="space-y-stack-md">
+                {% for field in form %}
+                <div class="flex flex-col gap-[8px]">
+                    <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="{{ field.id_for_label }}">
+                        {{ field.label }} {% if field.field.required %}*{% endif %}
+                    </label>
+                    <div class="relative">
+                        {# Icon mapping based on field name or widget type #}
+                        {% if field.name == "serial_number" %}
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="material-symbols-outlined text-outline text-[20px]">barcode</span>
+                            </div>
+                        {% elif field.name == "department" or field.name == "faculty" %}
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="material-symbols-outlined text-outline text-[20px]">domain</span>
+                            </div>
+                        {% elif field.name == "office" or field.name == "room" or field.name == "building" or field.name == "floor" or "department" in field.name %}
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="material-symbols-outlined text-outline text-[20px]">location_on</span>
+                            </div>
+                        {% elif field.name == "purchase_date" or field.name == "warranty_until" or field.name == "next_due_date" %}
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="material-symbols-outlined text-outline text-[20px]">calendar_month</span>
+                            </div>
+                        {% elif field.name == "status" or field.name == "category" or field.name == "role" %}
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="material-symbols-outlined text-outline text-[20px]">category</span>
+                            </div>
+                        {% elif field.name == "notes" or field.name == "comments" %}
+                            <div class="absolute top-3 left-0 pl-3 flex items-start pointer-events-none">
+                                <span class="material-symbols-outlined text-outline text-[20px]">notes</span>
+                            </div>
+                        {% elif field.name == "functional" %}
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="material-symbols-outlined text-outline text-[20px]">task_alt</span>
+                            </div>
+                        {% elif field.name == "condition_score" %}
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="material-symbols-outlined text-outline text-[20px]">health_and_safety</span>
+                            </div>
+                        {% else %}
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="material-symbols-outlined text-outline text-[20px]">edit_document</span>
+                            </div>
+                        {% endif %}
+
+                        <div class="form-field-wrapper has-icon w-full">
+                            {{ field }}
+                        </div>
+                    </div>
+                    {% if field.help_text %}
+                        <p class="text-[12px] text-outline mt-1">{{ field.help_text|safe }}</p>
+                    {% endif %}
+                    {% if field.errors %}
+                        <p class="text-error text-[12px] mt-1">{{ field.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="pt-stack-lg border-t border-border-subtle flex flex-col-reverse md:flex-row justify-end gap-stack-sm mt-stack-lg">
+                <a href="{% if cancel_url %}{{ cancel_url }}{% else %}javascript:history.back(){% endif %}" class="px-6 py-3 min-h-[44px] rounded-lg border border-outline-variant text-on-surface-variant bg-surface hover:bg-surface-dim transition-colors font-label-caps text-label-caps flex items-center justify-center" style="text-decoration: none;">
+                    Cancel
+                </a>
+                <button type="submit" class="px-6 py-3 min-h-[44px] rounded-lg bg-primary text-on-primary hover:bg-primary-container transition-colors font-label-caps text-label-caps flex items-center justify-center gap-2 soft-shadow">
+                    <span class="material-symbols-outlined text-[18px]">save</span>
+                    Save
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Side Panel -->
+    <div class="lg:col-span-4 flex flex-col gap-stack-md">
+        <!-- Quick Tips Card -->
+        <div class="bg-primary-fixed/30 border border-primary-fixed rounded-xl p-stack-md">
+            <div class="flex items-start gap-3">
+                <span class="material-symbols-outlined text-primary mt-0.5">lightbulb</span>
+                <div>
+                    <h3 class="font-headline-sm text-[16px] leading-[24px] text-primary">Data Entry Guidelines</h3>
+                    <ul class="mt-2 space-y-2 font-body-md text-[13px] leading-[18px] text-on-surface-variant">
+                        <li class="flex items-start gap-1.5"><span class="material-symbols-outlined text-[14px] text-primary mt-0.5">check_small</span> Use standard naming conventions for consistency.</li>
+                        <li class="flex items-start gap-1.5"><span class="material-symbols-outlined text-[14px] text-primary mt-0.5">check_small</span> Verify details before saving to avoid duplicate records.</li>
+                        <li class="flex items-start gap-1.5"><span class="material-symbols-outlined text-[14px] text-primary mt-0.5">check_small</span> For support, contact the system administrator.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Make sure inputs with icons have enough left padding */
+    .form-field-wrapper.has-icon input:not([type="checkbox"]):not([type="radio"]), 
+    .form-field-wrapper.has-icon select, 
+    .form-field-wrapper.has-icon textarea {
+        padding-left: 2.5rem !important; /* pl-10 equivalent */
+    }
+    
+    /* Exception for checkbox/radio which shouldn't have huge padding inside, but offset the icon */
+    .form-field-wrapper.has-icon input[type="checkbox"], 
+    .form-field-wrapper.has-icon input[type="radio"] {
+        padding-left: 0 !important;
+        margin-left: 2.5rem;
+        margin-top: 0.25rem;
+    }
+</style>

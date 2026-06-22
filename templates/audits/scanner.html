@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Scanner — {{ session.title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto flex flex-col gap-stack-md">
+
+    <!-- Back & Progress -->
+    <div>
+        <a href="{% url 'audit-session-detail' session.pk %}" style="text-decoration:none;" class="inline-flex items-center gap-1 text-primary hover:text-on-primary-fixed-variant font-body-md text-body-md transition-colors mb-3">
+            <span class="material-symbols-outlined text-[18px]">arrow_back</span> {{ session.title }}
+        </a>
+        <div class="flex items-center justify-between font-body-md text-body-md text-on-surface-variant mb-2">
+            <span id="audit-progress-text">{{ report.verified_count }} / {{ report.expected_count }} verified</span>
+            <span class="font-semibold text-on-surface">{{ session.progress_pct }}%</span>
+        </div>
+        <div class="w-full bg-surface-container rounded-full h-3">
+            <div id="audit-progress-bar" class="bg-primary h-3 rounded-full transition-all duration-500" style="width: {{ session.progress_pct }}%"></div>
+        </div>
+    </div>
+
+    <!-- Offline Banner -->
+    <div id="offline-banner" class="hidden bg-error-container text-on-error-container px-4 py-2 rounded-lg font-body-md text-body-md flex items-center gap-2">
+        <span class="material-symbols-outlined text-[18px]">wifi_off</span> You are offline. Scans will retry on reconnect.
+    </div>
+
+    <!-- QR Camera Reader -->
+    <div class="bg-on-surface rounded-xl overflow-hidden shadow-sm">
+        <div id="qr-reader" class="w-full"></div>
+    </div>
+
+    <!-- Last Scan Result -->
+    <div class="bg-surface-container-lowest border border-border-subtle rounded-xl p-stack-md shadow-sm">
+        <p class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-1">Last Scan</p>
+        <p id="last-scan" class="font-headline-sm text-headline-sm text-on-surface">—</p>
+    </div>
+
+    <!-- Manual UID Entry -->
+    <form id="manual-uid-form" class="flex gap-2">
+        <div class="relative flex-grow">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">barcode</span>
+            <input type="text" id="manual-uid-input"
+                class="form-input block w-full rounded-lg border-outline-variant bg-surface-bright text-on-surface pl-10 pr-4 py-2.5 focus:outline-none transition-shadow font-body-md text-body-md"
+                placeholder="Enter UID manually (e.g. SCI-CS-000001)">
+        </div>
+        <button type="submit" class="bg-primary hover:bg-on-primary-fixed-variant text-on-primary px-5 py-2.5 rounded-lg font-label-caps text-label-caps flex items-center gap-1.5 transition-colors">
+            <span class="material-symbols-outlined text-[18px]">check</span> Verify
+        </button>
+    </form>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script>
+    window.AUDIT_SCANNER_CONFIG = {
+        sessionId: {{ session.pk }},
+        verifyUrl: "{% url 'audit-verify-api' session.pk %}",
+        lookupUrl: "{% url 'item-lookup' %}",
+        csrfToken: "{{ csrf_token }}",
+    };
+</script>
+<script src="{% static 'js/audit_scanner.js' %}"></script>
+{% endblock %}

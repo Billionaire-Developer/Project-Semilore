@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+
+<div class="max-w-lg mx-auto flex flex-col gap-stack-md">
+    <div>
+        <h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-surface">My Profile</h1>
+        <p class="font-body-md text-body-md text-on-surface-variant mt-1">Manage your role and departmental scope.</p>
+    </div>
+
+    <div class="bg-surface-container-lowest border border-border-subtle rounded-xl shadow-sm p-stack-md">
+        <!-- User Info -->
+        <div class="flex items-center gap-3 mb-stack-md pb-stack-md border-b border-border-subtle">
+            <div class="w-12 h-12 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center">
+                <span class="material-symbols-outlined text-[24px]">account_circle</span>
+            </div>
+            <div>
+                <p class="font-headline-sm text-headline-sm text-on-surface">{{ user.username }}</p>
+                <p class="font-body-md text-body-md text-on-surface-variant">{{ user.email|default:"No email set" }}</p>
+            </div>
+        </div>
+
+        <!-- Profile Form -->
+        <form method="post" class="space-y-stack-md">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="flex flex-col gap-1.5">
+                <label for="{{ field.id_for_label }}" class="font-label-caps text-label-caps text-on-surface-variant uppercase">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}<p class="text-error text-xs">{{ field.errors.0 }}</p>{% endif %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="w-full bg-primary hover:bg-on-primary-fixed-variant text-on-primary py-3 rounded-lg font-label-caps text-label-caps flex items-center justify-center gap-2 transition-colors mt-4">
+                <span class="material-symbols-outlined text-[18px]">save</span> Save Profile
+            </button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
