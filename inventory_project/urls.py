@@ -15,8 +15,8 @@ urlpatterns = [
     path('accounts/logout/', InventoryLogoutView.as_view(), name='logout'),
     path('accounts/profile/', ProfileView.as_view(), name='profile'),
     path('reports/inspection-pdf/', InspectionPDFView.as_view(), name='inspection-pdf'),
-    path('', RedirectView.as_view(url='/core/', permanent=False)),
-    path('home/', index, name='index'),
+    path('', index, name='index'),
+    path('home/', index, name='home'),
 ]
 
 if settings.DEBUG:

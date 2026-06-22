@@ -40,8 +40,7 @@
                     <td class="py-3 px-stack-md text-on-surface-variant">
                         <span class="inline-flex items-center gap-1">
                             <span class="material-symbols-outlined text-[14px] text-outline">location_on</span>
-                            {% if o.building %}{{ o.building }}{% endif %}{% if o.room %} / Rm {{ o.room }}{% endif %}{%
-                            if o.floor %}, Floor {{ o.floor }}{% endif %}
+                            {% if o.building %}{{ o.building }}{% endif %}{% if o.room %} / Rm {{ o.room }}{% endif %}{% if o.floor %}, Floor {{ o.floor }}{% endif %}
                             {% if not o.building and not o.room %}—{% endif %}
                         </span>
                     </td>

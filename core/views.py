@@ -520,7 +520,8 @@ class InspectionPDFView(LoginRequiredMixin, View):
     """
 
     def get(self, request):
-        from weasyprint import HTML
+        from xhtml2pdf import pisa
+        from io import BytesIO
         from django.conf import settings
 
         inspection_pk = request.GET.get('inspection')
@@ -535,13 +536,10 @@ class InspectionPDFView(LoginRequiredMixin, View):
 
         verify_url = item_verify_url(inspection.item)
 
-        # Build an absolute filesystem path to the QR image for WeasyPrint
+        # Build an absolute filesystem path to the QR image
         qr_absolute_path = ''
         if inspection.item.qr_code_image:
-            qr_absolute_path = (
-                'file:///' +
-                os.path.abspath(inspection.item.qr_code_image.path).replace('\\', '/')
-            )
+            qr_absolute_path = os.path.abspath(inspection.item.qr_code_image.path).replace('\\', '/')
 
         context = {
             'inspection': inspection,
@@ -552,9 +550,12 @@ class InspectionPDFView(LoginRequiredMixin, View):
 
         html_string = render_to_string('inspections/inspection_pdf.html', context, request=request)
 
-        pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri('/')).write_pdf()
+        result = BytesIO()
+        pdf = pisa.pisaDocument(BytesIO(html_string.encode("UTF-8")), result)
 
-        filename = f"inspection-{inspection.item.uid}-{inspection.pk}.pdf"
-        response = HttpResponse(pdf_file, content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="{filename}"'
-        return response
+        if not pdf.err:
+            filename = f"inspection-{inspection.item.uid}-{inspection.pk}.pdf"
+            response = HttpResponse(result.getvalue(), content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename="{filename}"'
+            return response
+        return HttpResponse('Error Generating PDF', status=400)

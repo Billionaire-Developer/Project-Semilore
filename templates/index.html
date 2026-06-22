@@ -169,10 +169,10 @@
 <div class="flex items-center gap-stack-lg">
 <span class="font-headline-md text-headline-md font-bold text-on-primary">ScholarTrack</span>
 <nav class="hidden md:flex items-center gap-stack-md ml-8">
-<a class="text-secondary-container hover:text-on-primary transition-colors font-body-md text-body-md hover:bg-on-secondary-fixed-variant/10 px-3 py-2 rounded-DEFAULT transition-all duration-200 ease-in-out" href="#">Dashboard</a>
-<a class="text-secondary-container hover:text-on-primary transition-colors font-body-md text-body-md hover:bg-on-secondary-fixed-variant/10 px-3 py-2 rounded-DEFAULT transition-all duration-200 ease-in-out" href="#">Inventory</a>
-<a class="text-secondary-container hover:text-on-primary transition-colors font-body-md text-body-md hover:bg-on-secondary-fixed-variant/10 px-3 py-2 rounded-DEFAULT transition-all duration-200 ease-in-out" href="#">Departments</a>
-<a class="text-secondary-container hover:text-on-primary transition-colors font-body-md text-body-md hover:bg-on-secondary-fixed-variant/10 px-3 py-2 rounded-DEFAULT transition-all duration-200 ease-in-out" href="#">QR Scan</a>
+<a class="text-secondary-container hover:text-on-primary transition-colors font-body-md text-body-md hover:bg-on-secondary-fixed-variant/10 px-3 py-2 rounded-DEFAULT transition-all duration-200 ease-in-out" href="{% url 'dashboard' %}">Dashboard</a>
+<a class="text-secondary-container hover:text-on-primary transition-colors font-body-md text-body-md hover:bg-on-secondary-fixed-variant/10 px-3 py-2 rounded-DEFAULT transition-all duration-200 ease-in-out" href="{% url 'item-list' %}">Inventory</a>
+<a class="text-secondary-container hover:text-on-primary transition-colors font-body-md text-body-md hover:bg-on-secondary-fixed-variant/10 px-3 py-2 rounded-DEFAULT transition-all duration-200 ease-in-out" href="{% url 'department-list' %}">Departments</a>
+<a class="text-secondary-container hover:text-on-primary transition-colors font-body-md text-body-md hover:bg-on-secondary-fixed-variant/10 px-3 py-2 rounded-DEFAULT transition-all duration-200 ease-in-out" href="{% url 'audit-list' %}">QR Scan</a>
 </nav>
 </div>
 <div class="flex items-center gap-stack-md">
@@ -183,9 +183,9 @@
 <button class="text-on-primary hover:bg-on-secondary-fixed-variant/10 p-2 rounded-full transition-colors flex items-center justify-center">
 <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
 </button>
-<button class="text-on-primary hover:bg-on-secondary-fixed-variant/10 p-2 rounded-full transition-colors flex items-center justify-center">
+<a href="{% url 'profile' %}" class="text-on-primary hover:bg-on-secondary-fixed-variant/10 p-2 rounded-full transition-colors flex items-center justify-center" style="text-decoration:none;">
 <span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
-</button>
+</a>
 </div>
 </div>
 </header>
@@ -205,12 +205,12 @@
                         Streamline your academic institution's inventory. From high-value lab equipment to departmental IT resources, ScholarTrack provides unified visibility, accountability, and seamless lifecycle management.
                     </p>
 <div class="flex flex-col sm:flex-row gap-stack-md pt-4">
-<button class="bg-primary text-on-primary px-8 py-3 rounded-DEFAULT font-headline-sm text-body-md shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 min-h-[44px] flex items-center justify-center">
+<a href="{% url 'signup' %}" style="text-decoration:none;" class="bg-primary text-on-primary px-8 py-3 rounded-DEFAULT font-headline-sm text-body-md shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 min-h-[44px] flex items-center justify-center">
                             Get Started
-                        </button>
-<button class="bg-surface-container text-on-surface px-8 py-3 rounded-DEFAULT border border-border-subtle font-headline-sm text-body-md hover:bg-surface-container-high transition-colors min-h-[44px] flex items-center justify-center">
+                        </a>
+<a href="{% url 'login' %}" style="text-decoration:none;" class="bg-surface-container text-on-surface px-8 py-3 rounded-DEFAULT border border-border-subtle font-headline-sm text-body-md hover:bg-surface-container-high transition-colors min-h-[44px] flex items-center justify-center">
                             Log In to Dashboard
-                        </button>
+                        </a>
 </div>
 </div>
 <div class="relative h-[400px] lg:h-[500px] rounded-xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-border-subtle">
