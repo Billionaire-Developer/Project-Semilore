@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-
+from django.shortcuts import render
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
@@ -50,6 +50,10 @@ from .services.qr import generate_qr_for_item, item_verify_url
 
 
 # ----- Auth -----
+
+def index(request):
+    return render(request, 'index.html')
+
 class InventoryLoginView(LoginView):
     template_name = 'accounts/login.html'
     authentication_form = LoginForm

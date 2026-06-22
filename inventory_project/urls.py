@@ -3,7 +3,7 @@ from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
 
-from core.views import InventoryLoginView, InventoryLogoutView, ProfileView, InventorySignupView, InspectionPDFView
+from core.views import InventoryLoginView, InventoryLogoutView, ProfileView, InventorySignupView, InspectionPDFView, index
 from django.views.generic import RedirectView
 
 urlpatterns = [
@@ -16,6 +16,7 @@ urlpatterns = [
     path('accounts/profile/', ProfileView.as_view(), name='profile'),
     path('reports/inspection-pdf/', InspectionPDFView.as_view(), name='inspection-pdf'),
     path('', RedirectView.as_view(url='/core/', permanent=False)),
+    path('home/', index, name='index'),
 ]
 
 if settings.DEBUG:
